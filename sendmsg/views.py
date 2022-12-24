@@ -51,3 +51,8 @@ def messageform(request):
 
 def index(request):
     return render(request, 'sendmsg/index.html')
+
+def history(request):
+    if request.method == 'GET':
+        messages = Message.objects.all()
+        return render(request, 'sendmsg/history.html', {'messages': messages})
