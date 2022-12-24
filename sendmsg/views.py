@@ -53,6 +53,40 @@ def index(request):
     return render(request, 'sendmsg/index.html')
 
 def history(request):
+    messages = Message.objects.all().order_by('-send_date')
+    
     if request.method == 'GET':
-        messages = Message.objects.all()
         return render(request, 'sendmsg/history.html', {'messages': messages})
+    elif request.method == 'POST':
+        if 'delete' in request.POST:
+            try:
+                Message.objects.get(id=request.POST['id']).delete()
+                return render(request, 'sendmsg/history.html', {'messages': messages, 'success': True})
+            except:
+                errors = []
+                errors.append('Something went wrong, please try again later.')
+                return render(request, 'sendmsg/history.html', {'messages': messages, 'errors': errors})
+        elif 'resend' in request.POST:
+            message = Message.objects.get(id=request.POST['id'])
+            try:
+                r = requests.post(env('POSTURL'), json={'message': message.message}, timeout=40)
+            except requests.exceptions.ConnectionError:
+                errors = []
+                errors.append('Connection Error, please try again later.')
+                return render(request, 'sendmsg/history.html', {'messages': messages, 'errors': errors})
+            except requests.exceptions.Timeout:
+                errors = []
+                errors.append('Timeout Error, please try again later.')
+                return render(request, 'sendmsg/history.html', {'messages': messages, 'errors': errors})
+            else:
+                if(r.status_code):
+                    message.send_date = timezone.now()
+                    message.is_sent = True
+                    message.save()
+                    return render(request, 'sendmsg/history.html', {'messages': messages, 'success': True})
+                else:
+                    errors = []
+                    errors.append('Something went wrong, please try again later.')
+                    return render(request, 'sendmsg/history.html', {'messages': messages, 'errors': errors})
+    else:
+        return HttpResponse('Method not allowed')

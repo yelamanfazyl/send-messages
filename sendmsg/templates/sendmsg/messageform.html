@@ -15,8 +15,14 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
 
-        body{
+        html, body{
             font-family: 'Montserrat', sans-serif;
+            height: 100%;
+        }
+
+        textarea {
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
         }
     </style>
 </head>
@@ -35,20 +41,23 @@
         </div>
     {% endif %}
 
-    <div class = "d-flex justify-content-center text-center my-5">
-        <h1>Message Sender</h1>
-    </div>
 
-    <div class = "d-flex justify-content-center text-center my-4">
-        <form action="/sendmessage" method="post">
-            {% csrf_token %}
-            {{ form.as_div }}
-            <input class = "btn btn-success btn-lg justify-content-center my-2" type="submit" value="Submit">
-        </form>
-    </div>
-
-    <div class="d-flex justify-content-center">
-        <a href="/"><button class = "btn btn-primary btn-lg">Return to home page</button></a>
+    <div class="h-100 d-flex align-items-center justify-content-center">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Message Sender</h5>
+            
+                <div class = "text-center my-4">
+                    <form action="/sendmessage" method="post">
+                        {% csrf_token %}
+                        {{ form.as_div }}
+                        <input class = "btn btn-success btn-lg justify-content-center my-2" type="submit" value="Submit">
+                    </form>
+                </div>
+                <a href="/"><button class = "btn btn-primary btn-lg">Return to home page</button></a>
+                
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript Bundle with Popper -->
